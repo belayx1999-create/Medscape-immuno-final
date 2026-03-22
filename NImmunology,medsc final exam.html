@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Immunology Final Exam</title>
+<style>
+body{font-family:Arial;background:#f2f2f2;margin:20px;}
+h2{text-align:center;}
+#timer{text-align:center;font-size:22px;font-weight:bold;color:red;margin-bottom:20px;}
+.questionBox{background:white;padding:20px;border-radius:8px;box-shadow:0 0 6px rgba(0,0,0,0.2);}
+.navbuttons{text-align:center;margin-top:20px;}
+.navbuttons button{padding:10px 20px;margin:5px;font-size:16px;}
+.numberNav{text-align:center;margin-top:20px;}
+.numberNav button.unanswered{background:red;color:white;}
+.numberNav button.answered{background:black;color:white;}
+#result{margin-top:40px;padding:20px;background:white;border:2px solid black;text-align:center;font-size:22px;font-weight:bold;}
+#start{display:block;margin:auto;margin-top:50px;padding:15px;font-size:18px;}
+#confirmBox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);}
+#confirmContent{background:white;width:300px;padding:20px;margin:200px auto;text-align:center;border-radius:8px;}
+#confirmContent button{margin:10px;padding:10px 20px;}
+</style>
+<script>
+// ====== EXAM CONFIG ======
+let examConfig = {
+  heading: "MBHSC Dep't of phar. Imuno and biological product final exam By Mr. Belayneh A.",
+  timeMinutes: 50,
+  passMark: 18,
+  questions: [
+    {q:"The term \"biotechnology\" was first coined by the Hungarian engineer Karl Ereky in 1919.",options:["True","False"],a:"True"},
+    {q:"RNA serves as the primary repository of genetic information in most life forms.",options:["True","False"],a:"False"},
+    {q:"Plasmids are extra-chromosomal, self-replicating, circular DNA molecules commonly found in bacteria.",options:["True","False"],a:"True"},
+    {q:"Exonucleases are enzymes that break internal phosphodiester bonds within a DNA molecule.",options:["True","False"],a:"False"},
+    {q:"Cytokines are typically produced by the body in very large, constant quantities.",options:["True","False"],a:"False"},
+    {q:"Interferons were the first family of cytokines to be discovered.",options:["True","False"],a:"True"},
+    {q:"The primary purpose of an expression vector is to facilitate high-level transcription and translation of a cloned gene.",options:["True","False"],a:"True"},
+    {q:"Which branch of biotechnology specifically includes medical procedures such as the production of novel drugs?",options:["A) Green biotechnology","B) White biotechnology","C) Red biotechnology","D) Blue biotechnology"],a:"C)"},
+    {q:"Which core technology developed in the early 1970s is a foundation of modern biotechnology?",options:["A) Hybrid seed production","B) Recombinant DNA (r-DNA)","C) Microbial fermentation","D) Plant tissue culture"],a:"B)"},
+    {q:"What was the first commercial pharmaceutical product derived from biotechnology, marketed in 1982?",options:["A) Penicillin","B) Recombinant human insulin","C) Erythropoietin","D) Interferon-alpha"],a:"B)"},
+    {q:"The process of manipulating genes outside of an organism's normal reproductive process is called:",options:["A) Molecular biology","B) Genetic engineering","C) Fermentation","D) Ancient biotechnology"],a:"B)"},
+    {q:"Which molecule carries genetic information from the gene to the ribosome for polypeptide synthesis?",options:["A) tRNA","B) rRNA","C) mRNA","D) cDNA"],a:"C)"},
+    {q:"Which nitrogenous base is unique to RNA and not found in DNA?",options:["A) Thymine","B) Adenine","C) Guanine","D) Uracil"],a:"D)"},
+    {q:"In the double-helix structure of DNA, guanine always pairs with:",options:["A) Adenine","B) Thymine","C) Cytosine","D) Uracil"],a:"C)"},
+    {q:"What are the three essential components of a nucleotide?",options:["A) Protein, sugar, and lipid","B) Phosphate group, pentose sugar, and a nitrogenous base","C) DNA, RNA, and enzymes","D) Amino acid, glucose, and phosphate"],a:"B)"},
+    {q:"Which enzyme is often referred to as \"molecular scissors\" because it cuts DNA at specific sequences?",options:["A) DNA ligase","B) DNA polymerase","C) Restriction endonuclease","D) Terminal transferase"],a:"C)"},
+    {q:"DNA ligase is primarily used in genetic engineering to:",options:["A) Degrade DNA molecules","B) Synthesize new DNA strands","C) Join DNA fragments together by forming phosphodiester bonds","D) Remove phosphate groups from DNA"],a:"C)"},
+    {q:"Which of the following is an example of an artificial method of gene transfer?",options:["A) Conjugation","B) Electroporation","C) Transduction","D) Natural transformation"],a:"B)"},
+    {q:"A \"clone\" in molecular biology refers to:",options:["A) A diverse population of different organisms","B) A collection of molecules or cells all identical to an original","C) Any virus that infects bacteria","D) A type of enzyme used to cut DNA"],a:"B)"},
+    {q:"Which vector is a hybrid constructed from both phages and plasmids?",options:["A) BAC","B) YAC","C) Cosmid","D) Lambda phage"],a:"C)"},
+    {q:"What is the primary advantage of using PCR (Polymerase Chain Reaction) over classical cloning?",options:["A) It is slower but more accurate","B) It requires living host cells for the initial reaction","C) It is faster and more convenient for obtaining large amounts of a specific gene","D) It can only be used for unknown sequences"],a:"C)"},
+    {q:"Which of the following is a characteristic of an ideal cloning vector?",options:["A) It must be large and difficult to isolate","B) It must lack a selectable marker","C) It must have one or more origins of replication","D) It must be toxic to the host cell"],a:"C)"},
+    {q:"The \"Central Dogma\" of molecular biology describes the flow of genetic information as:",options:["A) Protein → RNA → DNA","B) DNA → RNA → Protein","C) RNA → DNA → Protein","D) DNA → Protein → RNA"],a:"B)"},
+    {q:"Cytokines that act as chemical communicators between white blood cells are mostly produced by:",options:["A) Erythrocytes","B) Leukocytes","C) Platelets","D) Adipocytes"],a:"B)"},
+    {q:"Which biological product is used to treat various forms of anemia?",options:["A) Insulin","B) Interferon","C) Erythropoietin (EPO)","D) Growth factor"],a:"C)"},
+    {q:"Interferons are primarily produced by cells in response to:",options:["A) Bacterial toxins","B) Viral infections","C) High glucose levels","D) Physical injury only"],a:"B)"},
+    {q:"Which of the following is a common side effect of interferon administration?",options:["A) Immediate hair loss","B) Flu-like symptoms","C) Low blood sugar","D) Rapid weight gain"],a:"B)"},
+    {q:"In eukaryotes, where is the majority of the genome housed?",options:["A) Mitochondria","B) Cytoplasm","C) Nucleus","D) Ribosome"],a:"C)"},
+    {q:"In PCR, what happens during the Denaturation phase (approx. 94°C)?",options:["A) Primers bind to the DNA","B) The double-stranded DNA separates into single strands","C) DNA polymerase synthesizes a new strand","D) The DNA is destroyed"],a:"B)"},
+    {q:"In PCR, the \"Annealing\" phase involves:",options:["A) Heating to 94°C","B) Cooling to allow primers to bind to target sequences","C) Adding DNA ligase","D) Cutting the DNA with scissors"],a:"B)"},
+    {q:"Which heat-stable enzyme is used in PCR to synthesize new DNA strands?",options:["A) DNA Ligase","B) Restriction Enzyme","C) Taq Polymerase","D) RNA Polymerase"],a:"C)"},
+    {q:"The transfer of DNA from one bacterium to another through direct cell-to-cell contact is called:",options:["A) Transduction","B) Transformation","C) Conjugation","D) Electroporation"],a:"C)"},
+    {q:"Which step of rDNA production involves growing engineered cells in large quantities?",options:["A) Gene Isolation","B) rDNA Generation","C) Expression and Scale-up","D) Introduction into Host"],a:"C)"},
+    {q:"\"White biotechnology\" refers to the use of biological systems for:",options:["A) Medical procedures","B) Industrial processes","C) Agricultural improvement","D) Marine exploration"],a:"B)"},
+    {q:"The specific temperature used for the \"Extension\" phase of PCR is typically:",options:["A) 94°C","B) 72°C","C) 40°C","D) 100°C"],a:"B)"},
+  ]
+};
+// =======================================
+
+// --- Exam logic (same as your loved version) ---
+let answers = new Array(examConfig.questions.length);
+let current = 0;
+let submitted = false;
+let timeLeft = examConfig.timeMinutes*60;
+
+function shuffle(){for(let i=examConfig.questions.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[examConfig.questions[i], examConfig.questions[j]]=[examConfig.questions[j], examConfig.questions[i]];}}
+function startExam(){shuffle();document.getElementById("start").style.display="none";document.getElementById("exam").style.display="block";document.getElementById("examHeading").innerText=examConfig.heading;document.documentElement.requestFullscreen();showQuestion();startTimer();}
+function adjustFontSize(element){let baseSize=18;let maxLength=150;let len=element.innerText.length;let newSize=baseSize;if(len>maxLength){newSize=Math.max(14,baseSize-Math.floor((len-maxLength)/30));}element.style.fontSize=newSize+"px";}
+function showQuestion(){let q=examConfig.questions[current];let box=document.getElementById("qtext");box.innerHTML=(current+1)+". "+q.q+"<br><br>";for(let i=0;i<q.options.length;i++){let value=q.options[i].length<6?q.options[i]:q.options[i].substring(0,2);let checked=(answers[current]==value)?"checked":"";box.innerHTML+="<label><input type='radio' name='ans' value='"+value+"' "+checked+" onclick=\"selectAnswer('"+value+"')\"> "+q.options[i]+"</label><br><br>";}adjustFontSize(box);}
+function selectAnswer(val){answers[current]=val;let btn=document.getElementById("nav"+(current+1));btn.classList.remove("unanswered");btn.classList.add("answered");}
+function nextQ(){if(current<examConfig.questions.length-1){current++;showQuestion();}}
+function prevQ(){if(current>0){current--;showQuestion();}}
+function gotoQ(n){current=n;showQuestion();}
+function showSubmitConfirm(){document.getElementById("confirmBox").style.display="block";}
+function cancelSubmit(){document.getElementById("confirmBox").style.display="none";}
+function confirmSubmit(){document.getElementById("confirmBox").style.display="none";finalizeExam();}
+function autoSubmit(){if(submitted)return;finalizeExam();}
+function finalizeExam(){submitted=true;let score=0;for(let i=0;i<examConfig.questions.length;i++){if(answers[i]==examConfig.questions[i].a)score++;}let result=(score>=examConfig.passMark)?"PASS":"FAIL";document.getElementById("exam").style.display="none";document.getElementById("result").innerHTML="Score: "+score+" / "+examConfig.questions.length+"<br>"+result;}
+function startTimer(){let timer=setInterval(function(){let m=Math.floor(timeLeft/60);let s=timeLeft%60;document.getElementById("timer").innerHTML="Time Remaining: "+m+":"+(s<10?"0":"")+s;timeLeft--;if(timeLeft<0){clearInterval(timer);autoSubmit();}},1000);}
+document.addEventListener("visibilitychange",function(){if(document.hidden && !submitted){alert("You left the exam page.");autoSubmit();}});
+document.addEventListener("fullscreenchange",function(){if(!document.fullscreenElement && !submitted){alert("Fullscreen exited.");autoSubmit();}});
+</script>
+</head>
+<body>
+<h2 id="examHeading"></h2>
+<div id="timer"></div>
+<button id="start" onclick="startExam()">Start Exam</button>
+<div id="exam" style="display:none">
+  <div class="questionBox"><div id="qtext"></div></div>
+  <div class="navbuttons">
+    <button onclick="prevQ()">Previous</button>
+    <button onclick="nextQ()">Next</button>
+    <button onclick="showSubmitConfirm()">Submit</button>
+  </div>
+  <div class="numberNav">
+    <script>
+      for(let i=1;i<=examConfig.questions.length;i++){
+        document.write("<button id='nav"+i+"' class='unanswered' onclick='gotoQ("+(i-1)+")'>"+i+"</button>");
+      }
+    </script>
+  </div>
+</div>
+<div id="confirmBox">
+  <div id="confirmContent">
+    <p>Are you sure you want to submit the exam?</p>
+    <button onclick="confirmSubmit()">Yes Submit</button>
+    <button onclick="cancelSubmit()">Cancel</button>
+  </div>
+</div>
+<div id="result"></div>
+</body>
+</html>
